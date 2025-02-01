@@ -6,6 +6,7 @@
     <table>
       <thead>
         <tr>
+          <th>Status</th>
           <th>Title</th>
           <th>Due Date</th>
           <th>Priority</th>
@@ -14,7 +15,14 @@
       </thead>
       <tbody>
         <tr v-for="(task, index) in tasks" :key="index">
-          <td>{{ task.title }}</td>
+          <td>
+            <input
+              type="checkbox"
+              v-model="task.completed"
+              @change="saveTasks"
+            />
+          </td>
+          <td :class="{ completed: task.completed }">{{ task.title }}</td>
           <td>{{ task.dueDate }}</td>
           <td>{{ task.priority }}</td>
           <td>
@@ -47,14 +55,14 @@ import { ref, onMounted } from 'vue';
 
 export default {
   setup() {
-    const newTask = ref({ title: '', dueDate: '', priority: 'Medium' });
+    const newTask = ref({ title: '', dueDate: '', priority: 'Medium', completed: false });
     const tasks = ref([]);
     const editingIndex = ref(null);
     const showModal = ref(false);
 
     const openAddTaskModal = () => {
       editingIndex.value = null; // Reset editingIndex for adding a new task
-      newTask.value = { title: '', dueDate: '', priority: 'Medium' }; // Reset newTask
+      newTask.value = { title: '', dueDate: '', priority: 'Medium', completed: false }; // Reset newTask
       showModal.value = true;
     };
 
@@ -85,7 +93,7 @@ export default {
 
     const closeModal = () => {
       showModal.value = false;
-      newTask.value = { title: '', dueDate: '', priority: 'Medium' }; // Reset newTask
+      newTask.value = { title: '', dueDate: '', priority: 'Medium', completed: false }; // Reset newTask
       editingIndex.value = null; // Reset editingIndex
     };
 
@@ -170,5 +178,10 @@ button {
   float: right;
   cursor: pointer;
   font-size: 20px;
+}
+
+.completed {
+  text-decoration: line-through;
+  color: #888;
 }
 </style>
