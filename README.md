@@ -43,7 +43,11 @@ npm run lint
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
 **###Additional Features Implemented**
+
 **###Sorting Functionality:** The app includes options to sort tasks by date (old to new, new to old) or priority (low to high, high to low).
+
 **###Task Filtering by Title:** The search bar allows for filtering tasks by their title, making it easy to find specific tasks.
+
 **###Task Completion Toggle:** A checkbox is available to mark tasks as completed, which visually strikes through the task title and saves the completion state.
+
 **###Modal Forms for Task Editing:** Tasks can be edited using a modal window, which is a convenient way to manage task details.
