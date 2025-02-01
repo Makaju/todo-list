@@ -46,10 +46,12 @@
         </div>
       </div>
     </div>
+
+    <!-- Add/Edit Task Modal -->
     <div v-if="showModal" class="modal">
       <div class="modal-content">
         <span class="close" @click="closeModal">&times;</span>
-        <h3>{{ editingIndex !== null ? 'Edit Task' : 'Add Task' }}</h3>
+        <h3>{{ modalMode === 'edit' ? 'Edit Task' : 'Add Task' }}</h3>
         <div style="display:flex;flex-direction: column;">
           <input v-model="newTask.title" placeholder="Task Title" />
           <input type="date" v-model="newTask.dueDate" />
@@ -59,9 +61,11 @@
             <option value="Low">Low</option>
           </select>
         </div>
-        <button @click="addTask">{{ editingIndex !== null ? 'Update' : 'Add' }} Task</button>
+        <button @click="saveTask">{{ modalMode === 'edit' ? 'Update' : 'Add' }} Task</button>
       </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
     <div v-if="showDeleteModal" class="modal">
       <div class="modal-content">
         <span class="close" @click="closeDeleteModal">&times;</span>
@@ -74,8 +78,6 @@
     </div>
   </div>
 </template>
-
-
 
 <script>
 import { ref, onMounted, computed } from 'vue';
@@ -90,6 +92,7 @@ export default {
     const deleteTaskIndex = ref(null);
     const sortOption = ref('date-new-to-old');
     const searchQuery = ref('');
+    const modalMode = ref('add'); // add this line to track modal mode
 
     const filteredTasks = computed(() => {
       const filtered = tasks.value.filter(task =>
@@ -116,27 +119,30 @@ export default {
     });
 
     const openAddTaskModal = () => {
+      modalMode.value = 'add';
       editingIndex.value = null;
       newTask.value = { title: '', dueDate: '', priority: 'Medium', completed: false };
       showModal.value = true;
     };
 
-    const addTask = () => {
+    const editTask = (index) => {
+      modalMode.value = 'edit';
+      editingIndex.value = index;
+      newTask.value = { ...tasks.value[index] };
+      showModal.value = true;
+    };
+
+    const saveTask = () => {
       if (!newTask.value.title.trim()) return;
-      if (editingIndex.value !== null) {
+      
+      if (modalMode.value === 'edit' && editingIndex.value !== null) {
         tasks.value[editingIndex.value] = { ...newTask.value };
-        editingIndex.value = null;
       } else {
         tasks.value.push({ ...newTask.value });
       }
+      
       saveTasks();
       closeModal();
-    };
-
-    const editTask = (index) => {
-      newTask.value = { ...tasks.value[index] };
-      editingIndex.value = index;
-      showModal.value = true;
     };
 
     const confirmDeleteTask = (index) => {
@@ -156,6 +162,7 @@ export default {
       showModal.value = false;
       newTask.value = { title: '', dueDate: '', priority: 'Medium', completed: false };
       editingIndex.value = null;
+      modalMode.value = 'add';
     };
 
     const closeDeleteModal = () => {
@@ -182,8 +189,9 @@ export default {
     return {
       newTask,
       tasks,
+      modalMode,
       openAddTaskModal,
-      addTask,
+      saveTask,
       editTask,
       confirmDeleteTask,
       deleteTask,
